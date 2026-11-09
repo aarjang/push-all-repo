@@ -167,7 +167,19 @@ func (r *runner) execute() int {
 					n++
 				}
 			}
-			if n > 0 {
+			// A cleared selection (for example Ctrl+A in the list) must not
+			// silently walk every folder; stop like a declined confirmation
+			// would. A folder with no repositories at all is different: there
+			// was nothing to deselect, and the plain folders still belong in
+			// the report.
+			switch {
+			case n == 0 && repos > 0:
+				fmt.Fprintln(r.d.Out, "No repositories selected; nothing to push.")
+				r.run.FinishedAt = r.d.Now()
+				rep := report.Build(r.run)
+				report.RenderText(r.d.Out, rep, r.d.Style)
+				return ExitOK
+			case n > 0:
 				ok, err := r.d.Prompter.ConfirmStart(n)
 				if err != nil {
 					return r.fail(err)

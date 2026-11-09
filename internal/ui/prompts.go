@@ -93,8 +93,10 @@ func (p *HuhPrompter) Review(cands []model.Candidate) ([]model.Candidate, error)
 	if len(opts) == 0 {
 		return cands, nil
 	}
+	total := len(opts)
 	err := p.runForm(huh.NewMultiSelect[int]().
-		Title("Repositories to push (space toggles, enter confirms)").
+		TitleFunc(func() string { return ReviewTitle(len(selected), total) }, &selected).
+		Description("space toggles one · ctrl+a toggles all · enter confirms").
 		Options(opts...).Value(&selected))
 	if err != nil {
 		return nil, err
