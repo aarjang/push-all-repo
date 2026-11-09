@@ -167,17 +167,25 @@ func (r *runner) execute() int {
 					n++
 				}
 			}
-			if n > 0 {
-				ok, err := r.d.Prompter.ConfirmStart(n)
-				if err != nil {
-					return r.fail(err)
-				}
-				if !ok {
-					r.run.FinishedAt = r.d.Now()
-					rep := report.Build(r.run)
-					report.RenderText(r.d.Out, rep, r.d.Style)
-					return ExitOK
-				}
+			// An empty selection (for example after Ctrl+A cleared the list)
+			// must not silently walk every folder; stop like a declined
+			// confirmation would.
+			if n == 0 {
+				fmt.Fprintln(r.d.Out, "No repositories selected; nothing to push.")
+				r.run.FinishedAt = r.d.Now()
+				rep := report.Build(r.run)
+				report.RenderText(r.d.Out, rep, r.d.Style)
+				return ExitOK
+			}
+			ok, err := r.d.Prompter.ConfirmStart(n)
+			if err != nil {
+				return r.fail(err)
+			}
+			if !ok {
+				r.run.FinishedAt = r.d.Now()
+				rep := report.Build(r.run)
+				report.RenderText(r.d.Out, rep, r.d.Style)
+				return ExitOK
 			}
 		}
 	}

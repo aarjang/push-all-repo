@@ -47,6 +47,11 @@ func Outcome(r model.Result, s Style) string {
 		}
 		return s.Dim(s.Sym.UpToDate + " " + txt)
 	case model.NotPushed:
+		if r.Reason == model.NotARepo || r.Reason == model.NestedRepo {
+			// Reported separately and not counted as "not pushed" in the
+			// summary, so the progress line must not say "not pushed" either.
+			return s.Dim(s.Sym.Skipped + " " + r.Reason.TextWith(r.Detail))
+		}
 		txt := " not pushed: " + r.Reason.TextWith(r.Detail)
 		if r.Committed {
 			txt += " (local commit created)"

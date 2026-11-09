@@ -72,7 +72,7 @@ pushall
 
 1. Choose *A folder that contains my projects* or *A single project*.
 2. Enter the path.
-3. Review the list of repositories found (branch, how many commits are unpushed, dirty, no remote…) and untick any you do not want to push.
+3. Review the list of repositories found (branch, how many commits are unpushed, dirty, no remote…) and untick any you do not want to push. Space toggles one, Ctrl+A toggles all, Enter confirms; the heading shows how many are ticked. If none are ticked, `pushall` stops without touching anything.
 4. Confirm. Repositories are processed one at a time with a live progress line.
 5. For a repository with **uncommitted changes** you are asked: commit everything and push, push existing commits only, or skip. You can apply the same answer to the rest of the run.
 6. For a repository with **no remote** you are offered to create a GitHub repository (private by default), which is then set as `origin` and pushed.

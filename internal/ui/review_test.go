@@ -50,6 +50,14 @@ func TestOutcome(t *testing.T) {
 	assert.Equal(t, "x not pushed: authentication failed", Outcome(model.Result{Status: model.NotPushed, Reason: model.AuthFailed}, s))
 	assert.Equal(t, "- skipped (excluded in review)", Outcome(model.Result{Status: model.SkippedByUser, Detail: "excluded in review"}, s))
 	assert.Equal(t, "o not processed", Outcome(model.Result{Status: model.NotProcessed}, s))
+	// Plain folders are reported apart from failures, so they must not read as "not pushed".
+	assert.Equal(t, "- not a Git repository", Outcome(model.Result{Status: model.NotPushed, Reason: model.NotARepo}, s))
+	assert.Equal(t, "- inside another repository (not a top-level project)", Outcome(model.Result{Status: model.NotPushed, Reason: model.NestedRepo}, s))
+}
+
+func TestReviewTitle(t *testing.T) {
+	assert.Equal(t, "Repositories to push (28 of 28 selected)", ReviewTitle(28, 28))
+	assert.Equal(t, "Repositories to push (0 of 28 selected)", ReviewTitle(0, 28))
 }
 
 func TestNonInteractivePrompter(t *testing.T) {

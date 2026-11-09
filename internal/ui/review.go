@@ -6,6 +6,13 @@ import (
 	"github.com/aarjang/push-all-repo/internal/model"
 )
 
+// ReviewTitle is the heading of the review list; it shows how many
+// repositories are currently ticked so an emptied list is obvious before
+// enter is pressed.
+func ReviewTitle(selected, total int) string {
+	return fmt.Sprintf("Repositories to push (%d of %d selected)", selected, total)
+}
+
 // FormatReviewRow renders one line of the review list:
 // "name  [branch]  ↑2 | up to date | no upstream | no remote | dirty | detached | merge in progress".
 func FormatReviewRow(c model.Candidate, s Style) string {
