@@ -1,0 +1,21 @@
+Push report - 2026-11-09 14:03:17 - /Users/me/projects - folder mode
+
+Pushed (3)
+  + api-server   main     2 commits pushed
+  + website      develop  1 commit pushed; committed by tool: "chore: bulk push on 2026-11-09 14:03"
+  + new-tool     main     pushed to new GitHub repository https://github.com/me/new-tool (private)
+
+Already up to date (2)
+  = dotfiles     main     
+  = notes        main     (uncommitted changes left untouched)
+
+Not pushed (2)
+  x legacy-app   main     authentication failed
+  x scratch      -        no current branch (detached HEAD)
+
+Skipped by user (1)
+  - experiments  main     excluded in review
+
+Not a Git repository: Downloads, screenshots
+
+Summary: 3 pushed, 2 up to date, 2 not pushed, 1 skipped by user | 10 folders | 41 s

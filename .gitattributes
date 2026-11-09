@@ -1,0 +1,10 @@
+# Keep LF everywhere so golden files and Go sources are byte-identical on
+# Windows checkouts (the CI runner's git defaults to core.autocrlf=true).
+* text=auto eol=lf
+*.go text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+Makefile text eol=lf
+internal/report/testdata/* text eol=lf
