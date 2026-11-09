@@ -28,6 +28,34 @@ Windows: unzip, move `pushall.exe` to a folder on your `PATH`. SmartScreen may w
 go install github.com/aarjang/push-all-repo/cmd/pushall@latest
 ```
 
+`go install` puts the binary in `$(go env GOPATH)/bin` (usually `~/go/bin`), and the Go installer does **not** add that folder to your `PATH`. If `pushall` says *command not found* afterwards, add it once:
+
+zsh (macOS default):
+
+```bash
+echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.zshrc && source ~/.zshrc
+```
+
+bash:
+
+```bash
+echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.bashrc && source ~/.bashrc
+```
+
+PowerShell (permanent for your user; open a new terminal afterwards):
+
+```powershell
+[Environment]::SetEnvironmentVariable("Path", $env:Path + ";" + (go env GOPATH) + "\bin", "User")
+```
+
+Then check:
+
+```bash
+pushall --version
+```
+
+Until you fix `PATH` you can always run it by full path: `$(go env GOPATH)/bin/pushall`.
+
 ## Prerequisites
 
 - **Git 2.20 or newer** on your `PATH`, with `user.name` and `user.email` configured if you want `pushall` to commit for you.
