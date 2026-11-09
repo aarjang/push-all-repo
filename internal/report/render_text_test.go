@@ -5,6 +5,7 @@ import (
 	"flag"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -50,7 +51,10 @@ func checkGolden(t *testing.T, name string, got []byte) {
 	}
 	want, err := os.ReadFile(path)
 	require.NoError(t, err, "run with -update to create the golden file")
-	require.Equal(t, string(want), string(got))
+	// Tolerate a CRLF checkout of the golden file; the renderer itself must
+	// still emit LF only, which the Markdown test asserts separately.
+	wantLF := strings.ReplaceAll(string(want), "\r\n", "\n")
+	require.Equal(t, wantLF, string(got))
 }
 
 func TestRenderTextGolden(t *testing.T) {
