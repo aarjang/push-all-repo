@@ -47,7 +47,11 @@ func Outcome(r model.Result, s Style) string {
 		}
 		return s.Dim(s.Sym.UpToDate + " " + txt)
 	case model.NotPushed:
-		return s.Bad(s.Sym.NotPushed + " not pushed: " + r.Reason.TextWith(r.Detail))
+		txt := " not pushed: " + r.Reason.TextWith(r.Detail)
+		if r.Committed {
+			txt += " (local commit created)"
+		}
+		return s.Bad(s.Sym.NotPushed + txt)
 	case model.SkippedByUser:
 		txt := "skipped"
 		if r.Detail != "" {

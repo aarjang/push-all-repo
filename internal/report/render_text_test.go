@@ -74,6 +74,13 @@ func TestRenderTextInterrupted(t *testing.T) {
 	require.Contains(t, buf.String(), "1 not processed")
 }
 
+func TestDetailsMentionsCommitOnFailedPush(t *testing.T) {
+	r := model.Result{Candidate: model.Candidate{Name: "x", Branch: "main"}, Status: model.NotPushed, Reason: model.AuthFailed, Committed: true, CommitMessage: "wip"}
+	d := Details(r)
+	require.Contains(t, d, "authentication failed")
+	require.Contains(t, d, `local commit was created but not pushed: "wip"`)
+}
+
 func TestTruncate(t *testing.T) {
 	long := "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz"
 	require.Len(t, []rune(truncate(long)), MaxNameWidth)

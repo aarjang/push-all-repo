@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/aarjang/push-all-repo/internal/github"
 	"github.com/aarjang/push-all-repo/internal/model"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -68,7 +69,19 @@ func TestRemoteWithoutOriginAndNoUpstream(t *testing.T) {
 	assert.Equal(t, 1, code)
 	res := byName(r, "odd")
 	assert.Equal(t, model.NotPushed, res.Status)
-	assert.Equal(t, model.NoRemote, res.Reason)
+	assert.Equal(t, model.NoRemoteDeclined, res.Reason, "falls into the no-remote flow; --create-repo no declines")
+	assert.Contains(t, res.Detail, "no remote named origin")
+
+	// With a GitHub login and --create-repo yes the flow creates origin.
+	h2 := newHarness()
+	h2.gh = &github.FakeClient{Installed: true, Logged: true}
+	opts := folderOpts(projectsDir(base))
+	opts.CreateRepo = model.CreateRepoYes
+	r2, code2 := h2.run(t, context.Background(), opts)
+	assert.Equal(t, 0, code2)
+	assert.Equal(t, model.Pushed, byName(r2, "odd").Status)
+	require.Len(t, h2.gh.Calls, 1)
+	assert.Equal(t, "odd", h2.gh.Calls[0].Name)
 }
 
 func TestRejectedPush(t *testing.T) {

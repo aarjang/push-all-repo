@@ -91,7 +91,11 @@ func Details(r model.Result) string {
 		}
 		return ""
 	case model.NotPushed:
-		return r.Reason.TextWith(r.Detail)
+		d := r.Reason.TextWith(r.Detail)
+		if r.Committed {
+			d += fmt.Sprintf("; a local commit was created but not pushed: %q", r.CommitMessage)
+		}
+		return d
 	case model.SkippedByUser:
 		return r.Detail
 	case model.NotProcessed:

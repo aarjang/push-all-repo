@@ -126,7 +126,17 @@ func (r *runner) execute() int {
 		cs, err := discover.Discover(r.ctx, abs, r.d.Git)
 		if err != nil {
 			if r.ctx.Err() != nil {
-				return r.fail(context.Canceled)
+				// Interrupted during discovery: report what was found so far.
+				fmt.Fprintln(r.d.Err, "pushall: interrupted during discovery")
+				r.run.Interrupted = true
+				for _, c := range cs {
+					r.run.Results = append(r.run.Results, model.Result{Candidate: c, Status: model.NotProcessed, Reason: model.Interrupted})
+				}
+				r.run.FinishedAt = r.d.Now()
+				rep := report.Build(r.run)
+				fmt.Fprintln(r.d.Out)
+				report.RenderText(r.d.Out, rep, r.d.Style)
+				return rep.ExitCode(r.opts.Strict)
 			}
 			return r.fail(fmt.Errorf("cannot read %s: %w", abs, err))
 		}
@@ -311,8 +321,14 @@ func (r *runner) processOne(c model.Candidate) (res model.Result) {
 		}
 	}
 
-	// no remote (FR-008)
+	// no remote (FR-008). A repository whose remotes are all named something
+	// other than origin, with no upstream, has nowhere to push either: the
+	// spec sends it through the same flow.
 	if !c.HasRemote() {
+		return r.handleNoRemote(c, res)
+	}
+	if c.Upstream == "" && !c.HasOrigin() {
+		res.SetDetail("no upstream and no remote named origin")
 		return r.handleNoRemote(c, res)
 	}
 

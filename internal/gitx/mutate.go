@@ -15,7 +15,11 @@ const MutateTimeout = 60 * time.Second
 func (g *Git) AddAll(ctx context.Context, path string) error {
 	_, stderr, err := g.R.Run(ctx, path, MutateTimeout, "add", "-A")
 	if err != nil {
-		return &OpError{Reason: model.CommitFailed, Detail: LastLine(stderr)}
+		reason, detail := Classify(err, stderr)
+		if reason == model.GitError {
+			reason = model.CommitFailed
+		}
+		return &OpError{Reason: reason, Detail: detail}
 	}
 	return nil
 }
